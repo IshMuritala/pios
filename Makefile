@@ -43,8 +43,10 @@ clean:
 	rm -f kernel8.elf
 
 debug:
-	screen -S qemu -d -m qemu-system-aarch64 -machine raspi3b -kernel kernel8.img -hda rootfs.img -S -s -serial null -serial stdio -monitor none -nographic -k en-us 
-	TERM=xterm gdb -x gdb_init_prot_mode.txt && killall qemu-system-aarch64
+	qemu-system-aarch64 -machine raspi3b -kernel kernel8.img -drive file=rootfs.img,format=raw -gdb tcp::1234 -S -serial stdio -monitor none -k en-us &
+	sleep 15  # Increased time for QEMU to start
+	TERM=xterm gdb-multiarch -ex "target remote localhost:1234" -x gdb_init_prot_mode.txt kernel8.elf
+	killall qemu-system-aarch64 || true
 
 run:
 	qemu-system-aarch64 -machine raspi3b -kernel kernel8.img -hda rootfs.img -serial null -serial stdio -monitor none -nographic -k en-us

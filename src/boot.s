@@ -23,7 +23,7 @@ b _start           /* CODE0 : Executable code */
  
 // Make _start global.
 .globl _start
- 
+
 // Entry point for the kernel. Registers:
 // x0 -> 32 bit pointer to DTB in memory (primary core only) / 0 (secondary cores)
 // x1 -> 0
@@ -35,6 +35,12 @@ _start:
     mrs x1, mpidr_el1
     and x1,x1,#3
     cbz x1, maincore
+
+
+
+    // bss stuff
+    bl clear_bss    // Branch and link to clear_bss
+    bl kernel_main  // Continue to kernel main
 
 notmaincore: // CPU id > 0: stop
     wfi
