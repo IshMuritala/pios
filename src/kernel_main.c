@@ -2,6 +2,8 @@
 // char glbl[128];
 // char huge_array[8192];
 
+#include "mmu.h"
+
 #include <stdint.h>
 
 extern char __bss_start;
@@ -56,5 +58,13 @@ void kernel_main() {
     while (1) {
         delay();
     }
+
+    if (mmu_on() != 0){
+
+        while (1);
+
+    }
+
+
 }
 

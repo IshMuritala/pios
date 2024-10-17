@@ -2,11 +2,11 @@
 
 CC := aarch64-linux-gnu-gcc
 LD := aarch64-linux-gnu-ld
-OBJDUMP := aarch64-linux-gnu--objdump
+OBJDUMP := aarch64-linux-gnu-objdump
 OBJCOPY := aarch64-linux-gnu-objcopy
 CONFIGS := -DCONFIG_HEAP_SIZE=4096
 
-CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -mcpu=cortex-a53+nofp -Wall $(CONFIGS)
+CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -mcpu=cortex-a53 -Wall $(CONFIGS)
 
 
 ODIR = obj
@@ -15,6 +15,8 @@ SDIR = src
 OBJS = \
 	boot.o \
 	kernel_main.o \
+	mmu.o\
+	mmusetup.o\
 
 
 
@@ -25,6 +27,10 @@ $(ODIR)/%.o: $(SDIR)/%.c
 
 $(ODIR)/%.o: $(SDIR)/%.s
 	$(CC) $(CFLAGS) -c -g -o $@ $^
+
+$(ODIR)/%.o: $(SDIR)/%.S
+	$(CC) $(CFLAGS) -c -g -o $@ $^
+
 
 
 all: bin rootfs.img
