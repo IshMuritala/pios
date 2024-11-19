@@ -17,7 +17,10 @@ OBJS = \
 	kernel_main.o \
 	mmu.o\
 	mmusetup.o\
-
+	sd.o\
+	fatinit.o\
+	fatopen.o\
+	fatread.o\
 
 
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))

@@ -1,70 +1,50 @@
 
-// char glbl[128];
-// char huge_array[8192];
-
-#include "mmu.h"
-
-#include <stdint.h>
-
-extern char __bss_start;
-extern char __bss_end;
-
-void clear_bss() {
-    char *ptr = &__bss_start;
-    while (ptr < &__bss_end) {
-        *ptr = 0;
-        ptr++;
-    }
-}
-
-unsigned long get_timer_count() {
-    unsigned long *timer_count_register = (unsigned long *)0x3f003004;
-    return *timer_count_register;
-}
-
-void wait_for_ms(unsigned long ms) {
-    unsigned long start = get_timer_count();
-    unsigned long delay = ms * 1000; // Convert ms to microseconds
-    while ((get_timer_count() - start) < delay) {
-        // Busy-wait
-    }
-}
 
 
-void delay() {
-    wait_for_ms(0); // Calls wait_for_ms with 0
-}
-
-
+#include "fat.h"
+#include <stdio.h>  // For printf
 
 void kernel_main() {
     // Clear the BSS segment
     clear_bss();
 
-    // Get the timer count
-    unsigned long timer_count = get_timer_count();
+    // Initialize the FAT filesystem
+    if (fatInit() != 0) {
+        printf("Failed to initialize FAT filesystem.\n");
+        return;
+    }
+    printf("FAT filesystem initialized.\n");
 
-    // Set breakpoint with gdb
+    // Define a root directory entry structure to store file information
+    struct root_directory_entry rde;
 
-    // Wait for 1 ms
-    wait_for_ms(1);
+    // Open a file (replace "TEST    TXT" with your actual file name)
+    if (fatOpen("TEST    TXT", &rde) != 0) {
+        printf("Failed to open file.\n");
+        return;
+    }
+    printf("File opened. Start cluster: %d, Size: %d\n", rde.cluster, rde.file_size);
 
-    // Check again
-    timer_count = get_timer_count();
+    // Create a buffer to hold the file data
+    char buffer[rde.file_size];
 
-    // Set breakpoint
+    // Read the file contents into the buffer
+    if (fatRead(&rde, buffer, rde.file_size) != rde.file_size) {
+        printf("Failed to read file.\n");
+        return;
+    }
+    printf("File read successfully:\n%s\n", buffer);
 
-    // Loop forever
+    // Rest of your kernel loop or other main functionality
     while (1) {
         delay();
     }
 
-    if (mmu_on() != 0){
-
+    if (mmu_on() != 0) {
         while (1);
-
     }
-
-
 }
+
+
+
 
