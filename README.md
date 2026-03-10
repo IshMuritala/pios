@@ -1,4 +1,4 @@
-(for comp 310)
+[forked] | (for comp 310)
 
 # Rasbperry Pi OS
 
