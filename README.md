@@ -1,3 +1,4 @@
+(for comp 310)
 
 # Rasbperry Pi OS
 
